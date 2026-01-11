@@ -229,7 +229,7 @@ struct ContentView: View {
         let message: [String: Any] = [
             "type": "custom_action",
             "payload": [
-                "action": "button_pressed",
+                "action": "subscribe",
                 "timestamp": Date().ISO8601Format(),
                 "data": "Custom action from Swift"
             ]
