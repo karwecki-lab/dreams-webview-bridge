@@ -187,7 +187,7 @@ function App() {
         )}
 
         {/* Statistics Section */}
-        <section className="card stats-card">
+        <section className="stats-card">
           <h2>📊 Statistics</h2>
           <div className="stats-grid">
             <div className="stat-item">
