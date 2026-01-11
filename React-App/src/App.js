@@ -2,9 +2,16 @@ import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 
 function App() {
-  // Stan dla przechowywania wiadomości
+  // Session state
+  const [isSessionActive, setIsSessionActive] = useState(false);
+  const [userId, setUserId] = useState(null);
+  
+  // Messages state
   const [messagesFromNative, setMessagesFromNative] = useState([]);
-  const [messagesSent, setMessagesSent] = useState(0);
+  const [messagesReceivedCount, setMessagesReceivedCount] = useState(0);
+  const [messagesSentCount, setMessagesSentCount] = useState(0);
+  
+  // Environment
   const [isWebViewEnvironment, setIsWebViewEnvironment] = useState(false);
 
   // Sprawdź czy aplikacja działa w WebView
@@ -15,23 +22,56 @@ function App() {
     if (inWebView) {
       console.log('✅ Running in WKWebView environment');
     } else {
-      console.log('⚠️ Not running in WKWebView - using mock environment');
+      console.log('⚠️ Not running in WKWebView');
     }
   }, []);
 
   // Funkcja odbierająca wiadomości z aplikacji natywnej (Swift)
-  // Ta funkcja jest wywoływana przez Swift przez evaluateJavaScript
   const receiveMessageFromNative = useCallback((message) => {
     console.log('📨 Received from Native:', message);
     
-    const timestamp = new Date().toLocaleTimeString('pl-PL');
-    const messageWithTimestamp = {
-      ...message,
-      receivedAt: timestamp
-    };
-    
-    setMessagesFromNative(prev => [messageWithTimestamp, ...prev]);
-  }, []);
+    // Obsługa różnych typów wiadomości
+    if (message.type === 'session_started') {
+      // START SESJI
+      const newUserId = message.payload?.userId || 'unknown';
+      setIsSessionActive(true);
+      setUserId(newUserId);
+      setMessagesReceivedCount(prev => prev + 1);
+      console.log('🟢 Session started:', newUserId);
+      
+      // Dodaj wiadomość do historii
+      const timestamp = new Date().toLocaleTimeString('pl-PL');
+      setMessagesFromNative(prev => [{
+        ...message,
+        receivedAt: timestamp
+      }, ...prev]);
+      
+    } else if (message.type === 'session_ended') {
+      // KONIEC SESJI (RESET)
+      console.log('🔴 Session ended - clearing state');
+      setIsSessionActive(false);
+      setUserId(null);
+      setMessagesFromNative([]);
+      setMessagesReceivedCount(0);
+      setMessagesSentCount(0);
+      
+    } else {
+      // NORMALNA WIADOMOŚĆ
+      if (!isSessionActive) {
+        console.warn('⚠️ Message rejected - no active session');
+        return;
+      }
+      
+      const timestamp = new Date().toLocaleTimeString('pl-PL');
+      const messageWithTimestamp = {
+        ...message,
+        receivedAt: timestamp
+      };
+      
+      setMessagesFromNative(prev => [messageWithTimestamp, ...prev]);
+      setMessagesReceivedCount(prev => prev + 1);
+    }
+  }, [isSessionActive]);
 
   // Zarejestruj globalną funkcję do odbierania wiadomości
   useEffect(() => {
@@ -44,33 +84,43 @@ function App() {
 
   // Funkcja wysyłająca wiadomość do aplikacji natywnej (Swift)
   const sendMessageToNative = () => {
+    if (!isWebViewEnvironment) {
+      alert('Ta funkcja działa tylko w WKWebView!');
+      return;
+    }
+
+    if (!isSessionActive) {
+      alert('⚠️ Sesja nie jest aktywna!\nKliknij "Start Sesji" w iOS aby nawiązać połączenie.');
+      return;
+    }
+
     const message = {
       type: 'greeting',
       payload: {
         text: 'Cześć z React! 🎉',
-        count: messagesSent + 1,
+        count: messagesSentCount + 1,
         timestamp: new Date().toISOString(),
         source: 'React-JavaScript'
       }
     };
 
-    if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nativeApp) {
-      try {
-        window.webkit.messageHandlers.nativeApp.postMessage(message);
-        console.log('📤 Sent to Native:', message);
-        setMessagesSent(prev => prev + 1);
-      } catch (error) {
-        console.error('❌ Error sending message:', error);
-        alert('Błąd wysyłania wiadomości: ' + error.message);
-      }
-    } else {
-      console.warn('⚠️ WKWebView interface not available');
-      alert('Ta funkcja działa tylko w WKWebView!');
+    try {
+      window.webkit.messageHandlers.nativeApp.postMessage(message);
+      console.log('📤 Sent to Native:', message);
+      setMessagesSentCount(prev => prev + 1);
+    } catch (error) {
+      console.error('❌ Error sending message:', error);
+      alert('Błąd wysyłania wiadomości: ' + error.message);
     }
   };
 
-  // Wysłanie testowej wiadomości akcji użytkownika
+  // Wysłanie akcji użytkownika
   const sendActionMessage = (actionType) => {
+    if (!isSessionActive) {
+      alert('⚠️ Sesja nie jest aktywna!');
+      return;
+    }
+
     const message = {
       type: 'user_action',
       payload: {
@@ -80,34 +130,14 @@ function App() {
       }
     };
 
-    if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nativeApp) {
-      try {
-        window.webkit.messageHandlers.nativeApp.postMessage(message);
-        console.log('📤 Sent action to Native:', message);
-        setMessagesSent(prev => prev + 1);
-      } catch (error) {
-        console.error('❌ Error sending action:', error);
-      }
+    try {
+      window.webkit.messageHandlers.nativeApp.postMessage(message);
+      console.log('📤 Sent action to Native:', message);
+      setMessagesSentCount(prev => prev + 1);
+    } catch (error) {
+      console.error('❌ Error sending action:', error);
     }
   };
-
-  // Wyślij gotowość aplikacji do native przy pierwszym renderze
-  useEffect(() => {
-    if (isWebViewEnvironment) {
-      setTimeout(() => {
-        const readyMessage = {
-          type: 'app_ready',
-          payload: {
-            timestamp: new Date().toISOString(),
-            message: 'React app is ready to communicate'
-          }
-        };
-        
-        window.webkit.messageHandlers.nativeApp.postMessage(readyMessage);
-        console.log('📤 Sent ready message to Native');
-      }, 500);
-    }
-  }, [isWebViewEnvironment]);
 
   return (
     <div className="App">
@@ -115,21 +145,64 @@ function App() {
       <header className="App-header">
         <h1>🌐 React WebView App</h1>
         <p className="subtitle">Komunikacja z iOS Swift</p>
-        <div className={`status-badge ${isWebViewEnvironment ? 'connected' : 'disconnected'}`}>
-          {isWebViewEnvironment ? '✓ WKWebView' : '⚠ Browser Mode'}
+        
+        {/* Status badges */}
+        <div className="status-badges">
+          <div className={`status-badge ${isWebViewEnvironment ? 'connected' : 'disconnected'}`}>
+            {isWebViewEnvironment ? '✓ WKWebView' : '⚠ Browser Mode'}
+          </div>
+          
+          <div className={`status-badge ${isSessionActive ? 'session-active' : 'session-inactive'}`}>
+            {isSessionActive ? '🟢 Sesja aktywna' : '🔴 Brak sesji'}
+          </div>
         </div>
+
+        {/* User ID Display */}
+        {isSessionActive && userId && (
+          <div className="user-info">
+            <span className="user-icon">👤</span>
+            <span className="user-id">User: {userId}</span>
+          </div>
+        )}
       </header>
 
       {/* Main Content */}
       <main className="App-main">
+        
+        {/* Session Warning */}
+        {!isSessionActive && isWebViewEnvironment && (
+          <div className="warning-box">
+            <h3>⚠️ Sesja nieaktywna</h3>
+            <p>Kliknij przycisk <strong>"Start Sesji"</strong> w aplikacji iOS aby nawiązać połączenie.</p>
+            <p>Dopóki sesja nie zostanie rozpoczęta, nie możesz wysyłać ani odbierać wiadomości.</p>
+          </div>
+        )}
+
+        {/* Statistics Section */}
+        <section className="card stats-card">
+          <h2>📊 Statystyki</h2>
+          <div className="stats-grid">
+            <div className="stat-item">
+              <div className="stat-value">{messagesReceivedCount}</div>
+              <div className="stat-label">Otrzymano</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-value">{messagesSentCount}</div>
+              <div className="stat-label">Wysłano</div>
+            </div>
+          </div>
+        </section>
+
         {/* Send Message Section */}
         <section className="card">
           <h2>📤 Wyślij do iOS</h2>
+          
           <button 
             className="primary-button" 
             onClick={sendMessageToNative}
-            disabled={!isWebViewEnvironment}
+            disabled={!isWebViewEnvironment || !isSessionActive}
           >
+            {!isSessionActive && '🔒 '}
             Wyślij wiadomość do Swift
           </button>
           
@@ -137,22 +210,26 @@ function App() {
             <button 
               className="secondary-button" 
               onClick={() => sendActionMessage('button_clicked')}
-              disabled={!isWebViewEnvironment}
+              disabled={!isWebViewEnvironment || !isSessionActive}
             >
+              {!isSessionActive && '🔒 '}
               📱 Akcja: Klik
             </button>
             <button 
               className="secondary-button" 
               onClick={() => sendActionMessage('data_requested')}
-              disabled={!isWebViewEnvironment}
+              disabled={!isSessionActive || !isWebViewEnvironment}
             >
+              {!isSessionActive && '🔒 '}
               📊 Akcja: Dane
             </button>
           </div>
 
-          <div className="stats">
-            Wysłano wiadomości: <strong>{messagesSent}</strong>
-          </div>
+          {!isSessionActive && (
+            <div className="button-hint">
+              🔒 Przyciski zablokowane - wymagana aktywna sesja
+            </div>
+          )}
         </section>
 
         {/* Received Messages Section */}
@@ -160,7 +237,10 @@ function App() {
           <h2>📨 Odebrane z iOS</h2>
           {messagesFromNative.length === 0 ? (
             <div className="empty-state">
-              Brak wiadomości od aplikacji natywnej
+              {isSessionActive 
+                ? 'Brak wiadomości - wyślij coś z iOS!'
+                : 'Rozpocznij sesję aby odbierać wiadomości'
+              }
             </div>
           ) : (
             <div className="messages-list">
@@ -174,6 +254,9 @@ function App() {
                     {msg.payload && msg.payload.text ? (
                       <p className="message-text">{msg.payload.text}</p>
                     ) : null}
+                    {msg.payload && msg.payload.message ? (
+                      <p className="message-text">{msg.payload.message}</p>
+                    ) : null}
                     <pre className="message-data">
                       {JSON.stringify(msg.payload, null, 2)}
                     </pre>
@@ -186,19 +269,30 @@ function App() {
 
         {/* Info Section */}
         <section className="info-card">
-          <h3>ℹ️ Informacje</h3>
+          <h3>ℹ️ Jak to działa?</h3>
           <ul className="info-list">
-            <li>✅ Komunikacja JavaScript → Swift przez <code>window.webkit.messageHandlers</code></li>
-            <li>✅ Komunikacja Swift → JavaScript przez <code>window.receiveMessageFromNative()</code></li>
-            <li>✅ Format wiadomości: JSON z polami <code>type</code> i <code>payload</code></li>
-            <li>✅ Dwukierunkowa komunikacja w czasie rzeczywistym</li>
+            <li>
+              <strong>1. Start Sesji</strong>
+              <br/>Kliknij "Start Sesji" w iOS aby aktywować komunikację
+            </li>
+            <li>
+              <strong>2. Wysyłanie wiadomości</strong>
+              <br/>Gdy sesja aktywna, możesz swobodnie wymieniać wiadomości
+            </li>
+            <li>
+              <strong>3. Reset</strong>
+              <br/>Reset w iOS kończy sesję i czyści wszystkie dane
+            </li>
           </ul>
         </section>
       </main>
 
       {/* Footer */}
       <footer className="App-footer">
-        <p>Dreams SDK + WKWebView Demo • React 18</p>
+        <p>Native WebView Bridge • React 18</p>
+        {isSessionActive && (
+          <p className="session-info">Sesja aktywna: {userId}</p>
+        )}
       </footer>
     </div>
   );

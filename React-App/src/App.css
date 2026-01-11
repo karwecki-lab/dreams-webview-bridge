@@ -30,6 +30,15 @@
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
+  margin: 4px;
+}
+
+.status-badges {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 .status-badge.connected {
@@ -40,6 +49,113 @@
 .status-badge.disconnected {
   background: #f59e0b;
   color: white;
+}
+
+.status-badge.session-active {
+  background: #10b981;
+  color: white;
+  animation: pulse 2s infinite;
+}
+
+.status-badge.session-inactive {
+  background: #ef4444;
+  color: white;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* User Info */
+.user-info {
+  margin-top: 12px;
+  padding: 8px 16px;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-icon {
+  font-size: 16px;
+}
+
+.user-id {
+  font-size: 13px;
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+/* Warning Box */
+.warning-box {
+  background: #fef3c7;
+  border: 2px solid #f59e0b;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.warning-box h3 {
+  margin: 0 0 8px 0;
+  color: #92400e;
+  font-size: 16px;
+}
+
+.warning-box p {
+  margin: 4px 0;
+  color: #78350f;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.warning-box strong {
+  color: #92400e;
+}
+
+/* Stats Card */
+.stats-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.stats-card h2 {
+  color: white;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: bold;
+  color: white;
+}
+
+.stat-label {
+  font-size: 13px;
+  margin-top: 4px;
+  opacity: 0.9;
+}
+
+/* Button Hint */
+.button-hint {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 6px;
+  font-size: 13px;
+  color: #991b1b;
+  text-align: center;
 }
 
 .App-main {

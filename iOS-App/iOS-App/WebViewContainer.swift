@@ -14,8 +14,7 @@ struct WebViewContainer: UIViewRepresentable {
     func makeUIView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
         
-        // Konfiguracja preferences
-        configuration.preferences.javaScriptEnabled = true
+        // Konfiguracja preferences (bez deprecated javaScriptEnabled)
         configuration.preferences.javaScriptCanOpenWindowsAutomatically = false
         
         // Rejestracja message handler dla komunikacji JavaScript → Swift
@@ -88,9 +87,9 @@ struct WebViewContainer: UIViewRepresentable {
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             print("✅ WebView finished loading")
             
-            // Loguj załadowanie strony w Dreams SDK
+            // Loguj załadowanie strony
             Task { @MainActor in
-                viewModel.logDreamsEvent(
+                viewModel.logEvent(
                     type: "webview_loaded",
                     data: [
                         "url": webView.url?.absoluteString ?? "unknown",
@@ -103,9 +102,9 @@ struct WebViewContainer: UIViewRepresentable {
         func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
             print("❌ WebView failed to load: \(error.localizedDescription)")
             
-            // Loguj błąd w Dreams SDK
+            // Loguj błąd
             Task { @MainActor in
-                viewModel.logDreamsEvent(
+                viewModel.logEvent(
                     type: "webview_error",
                     data: [
                         "error": error.localizedDescription,
@@ -143,15 +142,5 @@ struct WebViewContainer: UIViewRepresentable {
                 }
             }
         }
-    }
-}
-
-// MARK: - WebView Extension
-
-extension WebViewContainer {
-    
-    /// Wysyła wiadomość do JavaScript przez coordinator
-    func sendMessage(_ message: [String: Any]) {
-        // Ta metoda będzie wywołana z ContentView
     }
 }
