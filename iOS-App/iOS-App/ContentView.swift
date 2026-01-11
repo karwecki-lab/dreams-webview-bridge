@@ -8,7 +8,7 @@ struct ContentView: View {
     @StateObject private var viewModel = WebViewViewModel()
     @State private var webViewCoordinator: WebViewContainer.Coordinator?
     
-    // URL do aplikacji React - w produkcji można to zmienić na zdalny URL
+    // React app URL - change for production
     private let reactAppURL = URL(string: "https://dreams-webview-bridge.rafkar.workers.dev")!
     
     // MARK: - Body
@@ -38,7 +38,7 @@ struct ContentView: View {
                 .font(.headline)
                 .fontWeight(.bold)
             
-            Text("Dwukierunkowa komunikacja Swift ↔ JavaScript")
+            Text("Bidirectional Swift ↔ JavaScript Communication")
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
@@ -60,14 +60,14 @@ struct ContentView: View {
     
     private var controlsSection: some View {
         VStack(spacing: 12) {
-            // Przycisk wysyłania wiadomości
+            // Send message button
             Button(action: sendMessageToReact) {
                 HStack {
                     if !viewModel.isSessionActive {
                         Image(systemName: "lock.fill")
                     }
                     Image(systemName: "paperplane.fill")
-                    Text("Wyślij wiadomość do React")
+                    Text("Send Message to React")
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
@@ -78,12 +78,12 @@ struct ContentView: View {
             .disabled(!viewModel.isSessionActive)
             .padding(.horizontal)
             
-            // Dodatkowe przyciski akcji
+            // Additional action buttons
             HStack(spacing: 12) {
                 Button(action: startSession) {
                     VStack {
                         Image(systemName: "person.fill")
-                        Text("Start Sesji")
+                        Text("Start Session")
                             .font(.caption)
                     }
                     .frame(maxWidth: .infinity)
@@ -99,7 +99,7 @@ struct ContentView: View {
                                 .font(.caption2)
                         }
                         Image(systemName: "star.fill")
-                        Text("Akcja")
+                        Text("Action")
                             .font(.caption)
                     }
                     .frame(maxWidth: .infinity)
@@ -123,9 +123,9 @@ struct ContentView: View {
             }
             .padding(.horizontal)
             
-            // Hint gdy sesja nieaktywna
+            // Hint when session inactive
             if !viewModel.isSessionActive {
-                Text("🔒 Przyciski zablokowane - rozpocznij sesję")
+                Text("🔒 Buttons locked - start session")
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .padding(.horizontal)
@@ -140,20 +140,20 @@ struct ContentView: View {
         VStack(alignment: .leading, spacing: 8) {
             StatusRow(
                 icon: "message.fill",
-                title: "Ostatnia wiadomość:",
+                title: "Last message:",
                 value: viewModel.lastReceivedMessage
             )
             
             StatusRow(
                 icon: "arrow.up.circle.fill",
-                title: "Wysłano:",
+                title: "Sent:",
                 value: "\(viewModel.messagesSentCount)",
                 valueColor: .blue
             )
             
             StatusRow(
                 icon: "arrow.down.circle.fill",
-                title: "Otrzymano:",
+                title: "Received:",
                 value: "\(viewModel.messagesReceivedCount)",
                 valueColor: .green
             )
@@ -162,11 +162,11 @@ struct ContentView: View {
                 icon: "circle.fill",
                 title: "Status:",
                 value: viewModel.appStatus,
-                valueColor: viewModel.appStatus.contains("aktywna") ? .green : .secondary
+                valueColor: viewModel.appStatus.contains("active") ? .green : .secondary
             )
             
-            // NOWE: Wyświetlanie userId jeśli sesja aktywna
-            if viewModel.appStatus.contains("aktywna"),
+            // Display userId if session active
+            if viewModel.isSessionActive,
                let userId = extractUserId(from: viewModel.appStatus) {
                 StatusRow(
                     icon: "person.badge.key.fill",
@@ -202,7 +202,7 @@ struct ContentView: View {
         let userId = "user_\(UUID().uuidString.prefix(8))"
         viewModel.startSession(userId: userId)
         
-        // Wyślij informację o sesji do React
+        // Send session info to React
         guard let coordinator = webViewCoordinator else { return }
         
         let message: [String: Any] = [
@@ -210,7 +210,7 @@ struct ContentView: View {
             "payload": [
                 "userId": userId,
                 "timestamp": Date().ISO8601Format(),
-                "message": "Sesja rozpoczęta dla \(userId)"
+                "message": "Session started for \(userId)"
             ]
         ]
         
@@ -235,7 +235,7 @@ struct ContentView: View {
             ]
         ]
         
-        // Zwiększ licznik PRZED wysłaniem
+        // Increment counter BEFORE sending
         viewModel.messagesSentCount += 1
         
         coordinator.sendMessageToJavaScript(message)
@@ -246,7 +246,7 @@ struct ContentView: View {
     }
     
     private func resetApp() {
-        // Jeśli była aktywna sesja, wyślij session_ended do React
+        // If session was active, send session_ended to React
         if viewModel.isSessionActive, let coordinator = webViewCoordinator {
             let message: [String: Any] = [
                 "type": "session_ended",
@@ -259,15 +259,15 @@ struct ContentView: View {
             print("📤 Sent session_ended to React")
         }
         
-        // Reset stanu w ViewModel
+        // Reset ViewModel state
         viewModel.reset()
     }
     
     // MARK: - Helper Methods
     
-    /// Wyciąga userId z tekstu statusu
+    /// Extracts userId from status text
     private func extractUserId(from status: String) -> String? {
-        // Status format: "Sesja aktywna dla: user_abc12345"
+        // Status format: "Session active for: user_abc12345"
         let components = status.components(separatedBy: ": ")
         return components.count > 1 ? components[1] : nil
     }
@@ -275,7 +275,7 @@ struct ContentView: View {
 
 // MARK: - Supporting Views
 
-/// Wrapper dla WebViewContainer umożliwiający dostęp do coordinator
+/// Wrapper for WebViewContainer enabling coordinator access
 struct WebViewContainerWrapper: UIViewRepresentable {
     let url: URL
     let viewModel: WebViewViewModel
@@ -297,7 +297,7 @@ struct WebViewContainerWrapper: UIViewRepresentable {
         
         context.coordinator.webView = webView
         
-        // Zapisz coordinator dla późniejszego użycia
+        // Save coordinator for later use
         DispatchQueue.main.async {
             self.coordinator = context.coordinator
         }
@@ -314,7 +314,7 @@ struct WebViewContainerWrapper: UIViewRepresentable {
     }
 }
 
-/// Wiersz statusu z ikoną, tytułem i wartością
+/// Status row with icon, title and value
 struct StatusRow: View {
     let icon: String
     let title: String

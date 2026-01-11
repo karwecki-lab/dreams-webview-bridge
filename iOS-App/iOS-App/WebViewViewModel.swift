@@ -1,25 +1,25 @@
 import Foundation
 import Combine
 
-/// ViewModel zarządzający komunikacją między Swift a JavaScript
+/// ViewModel managing communication between Swift and JavaScript
 @MainActor
 class WebViewViewModel: ObservableObject {
     
     // MARK: - Published Properties
     
-    /// Ostatnia wiadomość otrzymana z React (JavaScript)
-    @Published var lastReceivedMessage: String = "Brak wiadomości"
+    /// Last message received from React (JavaScript)
+    @Published var lastReceivedMessage: String = "No messages"
     
-    /// Status aplikacji
-    @Published var appStatus: String = "Gotowa"
+    /// Application status
+    @Published var appStatus: String = "Ready"
     
-    /// Czy sesja jest aktywna
+    /// Whether session is active
     @Published var isSessionActive: Bool = false
     
-    /// Counter wiadomości wysłanych do React
+    /// Counter of messages sent to React
     @Published var messagesSentCount: Int = 0
     
-    /// Counter wiadomości otrzymanych z React
+    /// Counter of messages received from React
     @Published var messagesReceivedCount: Int = 0
     
     // MARK: - Private Properties
@@ -38,15 +38,15 @@ class WebViewViewModel: ObservableObject {
         logEvent(type: "app_initialized", data: ["timestamp": Date().ISO8601Format()])
     }
     
-    /// Loguje zdarzenie do konsoli
+    /// Logs event to console
     func logEvent(type: String, data: [String: Any]) {
         let timestamp = Date().formatted(.dateTime.hour().minute().second())
         print("📊 [\(timestamp)] Event '\(type)': \(data)")
     }
     
-    /// Rozpoczyna sesję dla użytkownika
+    /// Starts session for user
     func startSession(userId: String) {
-        appStatus = "Sesja aktywna dla: \(userId)"
+        appStatus = "Session active for: \(userId)"
         isSessionActive = true
         
         logEvent(
@@ -62,7 +62,7 @@ class WebViewViewModel: ObservableObject {
     
     // MARK: - Message Handling (JavaScript → Swift)
     
-    /// Obsługuje wiadomość otrzymaną z JavaScript (React)
+    /// Handles message received from JavaScript (React)
     func handleMessageFromJavaScript(_ message: [String: Any]) {
         guard let type = message["type"] as? String else {
             print("⚠️ Invalid message format from JavaScript")
@@ -71,17 +71,17 @@ class WebViewViewModel: ObservableObject {
         
         let payload = message["payload"] as? [String: Any] ?? [:]
         
-        // Inkrementuj licznik
+        // Increment counter
         messagesReceivedCount += 1
         
-        // Aktualizuj UI
+        // Update UI
         if let text = payload["text"] as? String {
             lastReceivedMessage = "[\(type)] \(text)"
         } else {
-            lastReceivedMessage = "[\(type)] Otrzymano: \(payload)"
+            lastReceivedMessage = "[\(type)] Received: \(payload)"
         }
         
-        // Loguj
+        // Log
         logEvent(
             type: "message_received_from_react",
             data: [
@@ -97,21 +97,21 @@ class WebViewViewModel: ObservableObject {
     
     // MARK: - Message Handling (Swift → JavaScript)
     
-    /// Przygotowuje wiadomość do wysłania do JavaScript (React)
+    /// Prepares message to send to JavaScript (React)
     func prepareMessageForJavaScript() -> [String: Any] {
         messagesSentCount += 1
         
         let message: [String: Any] = [
             "type": "greeting",
             "payload": [
-                "text": "Witaj z Swift! 🚀",
+                "text": "Hello from Swift! 🚀",
                 "count": messagesSentCount,
                 "timestamp": Date().ISO8601Format(),
                 "source": "iOS-Swift-Native"
             ]
         ]
         
-        // Loguj
+        // Log
         logEvent(
             type: "message_sent_to_react",
             data: [
@@ -126,7 +126,7 @@ class WebViewViewModel: ObservableObject {
         return message
     }
     
-    /// Wysyła niestandardową wiadomość do React
+    /// Sends custom message to React
     func sendCustomMessage(type: String, text: String) {
         let message: [String: Any] = [
             "type": type,
@@ -152,12 +152,12 @@ class WebViewViewModel: ObservableObject {
     
     // MARK: - Utility Methods
     
-    /// Resetuje stan aplikacji i kończy sesję
+    /// Resets application state and ends session
     func reset() {
-        lastReceivedMessage = "Brak wiadomości"
+        lastReceivedMessage = "No messages"
         messagesSentCount = 0
         messagesReceivedCount = 0
-        appStatus = "Gotowa"
+        appStatus = "Ready"
         isSessionActive = false
         
         logEvent(
@@ -168,7 +168,7 @@ class WebViewViewModel: ObservableObject {
         print("🔄 Application state reset - session ended")
     }
     
-    /// Zwraca statystyki komunikacji
+    /// Returns communication statistics
     func getStatistics() -> [String: Int] {
         return [
             "sent": messagesSentCount,
