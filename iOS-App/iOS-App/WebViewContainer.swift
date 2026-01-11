@@ -124,8 +124,8 @@ struct WebViewContainer: UIViewRepresentable {
                 return
             }
             
-            // Konwertuj słownik do JSON string
-            guard let jsonData = try? JSONSerialization.data(withJSONObject: message, options: []),
+            // Konwertuj słownik do JSON string z posortowanymi kluczami
+            guard let jsonData = try? JSONSerialization.data(withJSONObject: message, options: [.sortedKeys]),
                   let jsonString = String(data: jsonData, encoding: .utf8) else {
                 print("❌ Failed to serialize message to JSON")
                 return
