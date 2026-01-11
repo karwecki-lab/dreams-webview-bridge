@@ -223,7 +223,7 @@ function App() {
             disabled={!isWebViewEnvironment || !isSessionActive}
           >
             {!isSessionActive && '🔒 '}
-            Send Message to Swift
+            Action: Send Message to Swift
           </button>
           
           <div className="action-buttons">
@@ -233,7 +233,7 @@ function App() {
               disabled={!isWebViewEnvironment || !isSessionActive}
             >
               {!isSessionActive && '🔒 '}
-              📱 Action: Click
+              📱 Action: Request Customer Data
             </button>
             <button 
               className="secondary-button" 
@@ -241,7 +241,7 @@ function App() {
               disabled={!isSessionActive || !isWebViewEnvironment}
             >
               {!isSessionActive && '🔒 '}
-              📊 Action: Data
+              📊 Action: Request Payment
             </button>
           </div>
 
