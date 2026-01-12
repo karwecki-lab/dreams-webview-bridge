@@ -294,7 +294,7 @@ Hostuj `build/` folder i zmień URL w iOS app.
 ### Problem: WebView pokazuje pustą stronę
 
 **Rozwiązanie:**
-1. Sprawdź czy React dev server działa: `http://localhost:3000`
+1. Sprawdź czy React dev server działa: `https://dreams-webview-bridge.rafkar.workers.dev`
 2. Sprawdź logi Xcode Console
 3. Sprawdź `Info.plist` - `NSAllowsLocalNetworking` = `true`
 
