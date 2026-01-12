@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		7B1773E32F13AF5B005081C4 /* iOS-App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iOS-App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7B1773E32F13AF5B005081C4 /* WebView Bridge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WebView Bridge.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		7B1773E52F13AF5B005081C4 /* iOS-App */ = {
+		7B1773E52F13AF5B005081C4 /* WebView Bridge */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "iOS-App";
+			path = "WebView Bridge";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -32,7 +32,7 @@
 		7B1773DA2F13AF5B005081C4 = {
 			isa = PBXGroup;
 			children = (
-				7B1773E52F13AF5B005081C4 /* iOS-App */,
+				7B1773E52F13AF5B005081C4 /* WebView Bridge */,
 				7B1773E42F13AF5B005081C4 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -40,7 +40,7 @@
 		7B1773E42F13AF5B005081C4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				7B1773E32F13AF5B005081C4 /* iOS-App.app */,
+				7B1773E32F13AF5B005081C4 /* WebView Bridge.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,9 +48,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		7B1773E22F13AF5B005081C4 /* iOS-App */ = {
+		7B1773E22F13AF5B005081C4 /* WebView Bridge */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 7B1773EE2F13AF5C005081C4 /* Build configuration list for PBXNativeTarget "iOS-App" */;
+			buildConfigurationList = 7B1773EE2F13AF5C005081C4 /* Build configuration list for PBXNativeTarget "WebView Bridge" */;
 			buildPhases = (
 				7B1773DF2F13AF5B005081C4 /* Sources */,
 				7B1773E02F13AF5B005081C4 /* Frameworks */,
@@ -61,13 +61,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				7B1773E52F13AF5B005081C4 /* iOS-App */,
+				7B1773E52F13AF5B005081C4 /* WebView Bridge */,
 			);
-			name = "iOS-App";
+			name = "WebView Bridge";
 			packageProductDependencies = (
 			);
 			productName = "iOS-App";
-			productReference = 7B1773E32F13AF5B005081C4 /* iOS-App.app */;
+			productReference = 7B1773E32F13AF5B005081C4 /* WebView Bridge.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -86,7 +86,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 7B1773DE2F13AF5B005081C4 /* Build configuration list for PBXProject "iOS-App" */;
+			buildConfigurationList = 7B1773DE2F13AF5B005081C4 /* Build configuration list for PBXProject "WebView Bridge" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -100,7 +100,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				7B1773E22F13AF5B005081C4 /* iOS-App */,
+				7B1773E22F13AF5B005081C4 /* WebView Bridge */,
 			);
 		};
 /* End PBXProject section */
@@ -252,10 +252,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = MFHCFB44UZ;
+				DEVELOPMENT_TEAM = X2C29B43YH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -269,7 +270,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.karwecki.iOS-App";
+				PRODUCT_BUNDLE_IDENTIFIER = com.karwecki.webview;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -288,10 +289,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = MFHCFB44UZ;
+				DEVELOPMENT_TEAM = X2C29B43YH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -305,7 +307,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.karwecki.iOS-App";
+				PRODUCT_BUNDLE_IDENTIFIER = com.karwecki.webview;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -321,7 +323,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		7B1773DE2F13AF5B005081C4 /* Build configuration list for PBXProject "iOS-App" */ = {
+		7B1773DE2F13AF5B005081C4 /* Build configuration list for PBXProject "WebView Bridge" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7B1773EC2F13AF5C005081C4 /* Debug */,
@@ -330,7 +332,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		7B1773EE2F13AF5C005081C4 /* Build configuration list for PBXNativeTarget "iOS-App" */ = {
+		7B1773EE2F13AF5C005081C4 /* Build configuration list for PBXNativeTarget "WebView Bridge" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7B1773EF2F13AF5C005081C4 /* Debug */,
