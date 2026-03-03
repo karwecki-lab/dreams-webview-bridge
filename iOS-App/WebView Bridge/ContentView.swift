@@ -9,7 +9,8 @@ struct ContentView: View {
     @State private var webViewCoordinator: WebViewContainer.Coordinator?
     
     // React app URL - change for production
-    private let reactAppURL = URL(string: "https://dreams-webview-bridge.rafkar.workers.dev")!
+    // private let reactAppURL = URL(string: "https://dreams-webview-bridge.rafkar.workers.dev")!
+    private let reactAppURL = URL(string: "https://nnw-frontend.int.npr.dbyc.cardif.io/en/products")!
     
     // MARK: - Body
     
